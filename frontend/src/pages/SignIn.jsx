@@ -3,12 +3,13 @@ import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { signInStart, signInSuccess, signInFailure } from '../redux/user/userSlice';
 import { useDispatch, useSelector } from 'react-redux';
+import OAuth from '../components/OAuth';
 
 export default function SignIn () {
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { loading, error: errorMessage } = useSelector((state) => state.user);
+  const { loading, error: errorMessage } = useSelector((state) => state.users);
   const [formData, setFormData] = useState({});
   
   const handleChange = (e) => {
@@ -66,6 +67,7 @@ export default function SignIn () {
               <TextInput type='password' placeholder='Password' id='password' onChange={handleChange} />
             </div>
             <Button gradientDuoTone='purpleToBlue' type='submit' disabled={loading}>{loading ? <Spinner size='sm' /> : 'Sign In'}</Button>
+            <OAuth/>
           </form>
           <div className='flex gap-2 text-sm mt-5'>
             <span>Don't have an account?</span>
