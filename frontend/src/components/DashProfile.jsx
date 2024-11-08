@@ -2,7 +2,7 @@ import { Alert, Button, Modal, TextInput } from 'flowbite-react';
 import React, { useState } from 'react'
 import { useRef } from 'react';
 import { useSelector,useDispatch } from 'react-redux'
-import { updateStart, updateSuccess, updateFailure,deleteAccountStart,deleteAccountSuccess,deleteAccountFailure } from '../redux/user/userSlice.js';
+import { updateStart, updateSuccess, updateFailure,deleteAccountStart,deleteAccountSuccess,deleteAccountFailure,signoutSuccess } from '../redux/user/userSlice.js';
 import {HiOutlineExclamationCircle} from 'react-icons/hi'
 
 export default function DashProfile () {
@@ -94,22 +94,38 @@ export default function DashProfile () {
     }
   }
 
+  const handleSignOut = async () => {
+    try {
+      const res = await fetch('/api/user/signout', {
+        method: 'POST'
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        console.log(data.message);
+      } else {
+        dispatch(signoutSuccess());
+      }
+    } catch (error) {
+      console.log(error.message);
+    }
+  }
+
   return (
     <div className='max-w-lg mx-auto p-3 w-full'>
       <h1 className='my-7 text-center font-semibold text-3xl'>Profile</h1>
       <form className='flex flex-col gap-4' onSubmit={handleSubmit}>
-        <input type="file" accept='image/*' onChange={handleImageChange} ref={filePickerRef} hidden/>
-        <div className='w-32 h-32 self-center cursor-pointer shadow-md overflow-hidden rounded-full' onClick={()=>filePickerRef.current.click()}>
+        <input type="file" accept='image/*' onChange={handleImageChange} ref={filePickerRef} hidden />
+        <div className='w-32 h-32 self-center cursor-pointer shadow-md overflow-hidden rounded-full' onClick={() => filePickerRef.current.click()}>
           <img src={imageFileUrl || currentUser.profilePicture} alt="Profile Pic" className='w-full h-full rounded-full border-8 border-[lightgray] object-cover' />
         </div>
-        <TextInput type='text' id='username' placeholder='Username' defaultValue={currentUser.username} onChange={handleChange}/>
-        <TextInput type='email' id='email' placeholder='Email' defaultValue={currentUser.email} onChange={handleChange}/>
-        <TextInput type='password' id='password' placeholder='Password' onChange={handleChange}/>
+        <TextInput type='text' id='username' placeholder='Username' defaultValue={currentUser.username} onChange={handleChange} />
+        <TextInput type='email' id='email' placeholder='Email' defaultValue={currentUser.email} onChange={handleChange} />
+        <TextInput type='password' id='password' placeholder='Password' onChange={handleChange} />
         <Button type='submit' gradientDuoTone='greenToBlue' outline>Update</Button>
       </form>
       <div className='text-red-500 flex justify-between mt-5'>
-        <span className='cursor-pointer' onClick={()=>setShowModal(true)}>Delete Account</span>
-        <span className='cursor-pointer'>Sign Out</span>
+        <span className='cursor-pointer' onClick={() => setShowModal(true)}>Delete Account</span>
+        <span className='cursor-pointer' onClick={handleSignOut}>Sign Out</span>
       </div>
       {updateUserSuccess && (
         <Alert color='success' className='mt-5'>{updateUserSuccess}</Alert>
@@ -120,7 +136,7 @@ export default function DashProfile () {
       {error && (
         <Alert color='failure' className='mt-5'>{error}</Alert>
       )}
-      <Modal show={showModal} onClose={()=>setShowModal(false)} popup size='4xl'>
+      <Modal show={showModal} onClose={() => setShowModal(false)} popup size='4xl'>
         <Modal.Header />
         <Modal.Body>
           <div className='text-center'>
@@ -128,11 +144,11 @@ export default function DashProfile () {
             <h3 className='mb-5 text-lg text-gray-500 dark:text-gray-400'>Are u sure u want to delete your account?</h3>
             <div className='flex justify-center gap-4'>
               <Button color='failure' onClick={handleDeleteAccount}>Yes,I'm sure</Button>
-              <Button color='success' onClick={()=>setShowModal(false)}>No,cancel</Button>
+              <Button color='success' onClick={() => setShowModal(false)}>No,cancel</Button>
             </div>
           </div>
         </Modal.Body>
       </Modal>
     </div>
-  )
-}
+  );
+};
