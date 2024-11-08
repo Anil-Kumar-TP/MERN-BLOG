@@ -3,11 +3,12 @@ import React, { useState } from 'react'
 import { useRef } from 'react';
 import { useSelector,useDispatch } from 'react-redux'
 import { updateStart, updateSuccess, updateFailure,deleteAccountStart,deleteAccountSuccess,deleteAccountFailure,signoutSuccess } from '../redux/user/userSlice.js';
-import {HiOutlineExclamationCircle} from 'react-icons/hi'
+import { HiOutlineExclamationCircle } from 'react-icons/hi'
+import { Link } from 'react-router-dom';
 
 export default function DashProfile () {
   
-  const { currentUser,error } = useSelector((state) => state.user);
+  const { currentUser,error,loading } = useSelector((state) => state.user);
   const [imageFile, setImageFile] = useState(null);
   const [imageFileUrl, setImageFileUrl] = useState(null);
   const filePickerRef = useRef();
@@ -121,7 +122,12 @@ export default function DashProfile () {
         <TextInput type='text' id='username' placeholder='Username' defaultValue={currentUser.username} onChange={handleChange} />
         <TextInput type='email' id='email' placeholder='Email' defaultValue={currentUser.email} onChange={handleChange} />
         <TextInput type='password' id='password' placeholder='Password' onChange={handleChange} />
-        <Button type='submit' gradientDuoTone='greenToBlue' outline>Update</Button>
+        <Button type='submit' gradientDuoTone='greenToBlue' outline disabled={loading}>{loading ? 'loading' : 'Update'}</Button>
+        {currentUser.isAdmin && (
+          <Link to='/create-post'>
+            <Button type='button' gradientMonochrome='purple' className='w-full'>Create a post</Button>
+          </Link>
+        )}
       </form>
       <div className='text-red-500 flex justify-between mt-5'>
         <span className='cursor-pointer' onClick={() => setShowModal(true)}>Delete Account</span>
